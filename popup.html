@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      padding: 20px;
+      width: 340px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .header-icon {
+      font-size: 28px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2d3748;
+      letter-spacing: -0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 13px;
+      color: #4a5568;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: #f7fafc;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    input::placeholder {
+      color: #a0aec0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #run {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    #run:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+    }
+
+    #run:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    #run:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #stop {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      display: none;
+      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+    }
+
+    #stop:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(245, 87, 108, 0.4);
+    }
+
+    #stop:active {
+      transform: translateY(0);
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f0f4ff;
+      color: #667eea;
+      text-align: center;
+      border-left: 6px solid #667eea;
+      animation: fadeIn 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #status::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      z-index: -1;
+      opacity: 0.15;
+      transition: width 0.3s ease;
+    }
+
+    #status.processing {
+      background: #fffaf0;
+      color: #ed8936;
+      border-left-color: #ed8936;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    #status.processing::before {
+      background: linear-gradient(90deg, #ed8936 0%, #f59e0b 100%);
+      width: var(--progress, 0%);
+    }
+
+    #status.success {
+      background: #f0fff4;
+      color: #22863a;
+      border-left-color: #22863a;
+    }
+
+    #status.error {
+      background: #fff5f5;
+      color: #cb2431;
+      border-left-color: #cb2431;
+    }
+
+    .progress-container {
+      display: none;
+    }
+
+    .progress-bar {
+      display: none;
+    }
+
+    .progress-text {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 11px;
+      color: #a0aec0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="header-icon">🚀</div>
+      <div>
+        <h3>FormFlow</h3>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>📋 Form Link / ID</label>
+      <input id="formId" placeholder="Paste form link or ID" />
+    </div>
+
+    <div class="form-group">
+      <label>🔢 Responses Count</label>
+      <input id="count" type="number" value="10" min="1" />
+    </div>
+
+    <div class="form-group">
+      <label>⚡ Speed</label>
+      <select id="mode">
+        <option value="ultra">⚡⚡ Ultra Fast (300ms)</option>
+        <option value="fast">⚡ Fast (800ms)</option>
+        <option value="safe" selected>🐢 Safe (2000ms)</option>
+        <option value="slow">🐌 Slow (4000ms)</option>
+      </select>
+    </div>
+
+    <div class="button-group">
+      <button id="run">▶ Start</button>
+      <button id="stop">⏹ Stop</button>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+
+    <div id="status">🔄 Idle</div>
+
+    <div class="footer">
+      Bidyut Kumar Ghosh
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

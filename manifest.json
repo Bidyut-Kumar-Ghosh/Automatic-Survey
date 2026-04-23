@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "FormFlow - Survey Helper",
+  "version": "2.0",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["https://docs.google.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FormFlow - Auto Survey Responder",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

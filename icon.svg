@@ -1,0 +1,25 @@
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient background -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="128" height="128" fill="url(#grad)"/>
+  
+  <!-- Rocket body -->
+  <circle cx="64" cy="60" r="20" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Rocket tip -->
+  <polygon points="64,25 72,40 56,40" fill="#ff6b6b"/>
+  
+  <!-- Rocket flame -->
+  <polygon points="56,82 64,95 72,82" fill="#ffd93d"/>
+  <polygon points="60,82 64,90 68,82" fill="#ff6b6b"/>
+  
+  <!-- Windows -->
+  <circle cx="64" cy="50" r="4" fill="#667eea" opacity="0.8"/>
+</svg>
