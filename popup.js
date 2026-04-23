@@ -8,7 +8,14 @@ function updateProgress(current, total) {
 
 document.getElementById("run").addEventListener("click", async () => {
 
+  // Prevent starting if already running
+  if (running) {
+    return;
+  }
+
   running = true;
+  const runBtn = document.getElementById("run");
+  runBtn.disabled = true;
 
   let input = document.getElementById("formId").value;
   let count = parseInt(document.getElementById("count").value);
@@ -80,6 +87,8 @@ document.getElementById("run").addEventListener("click", async () => {
   status.className = running ? "success" : "error";
   document.getElementById("stop").style.display = "none";
   status.style.setProperty('--progress', '0%');
+  runBtn.disabled = false;
+  running = false;
 });
 
 document.getElementById("stop").addEventListener("click", () => {
