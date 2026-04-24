@@ -23,11 +23,17 @@ document.getElementById("run").addEventListener("click", async () => {
   let status = document.getElementById("status");
 
   document.getElementById("stop").style.display = "block";
+  status.style.display = "block";
 
   let match = input.match(/[-\w]{25,}/);
   if (!match) {
     status.innerText = "❌ Invalid Form Link";
     status.className = "error";
+    runBtn.disabled = false;
+    running = false;
+    setTimeout(() => {
+      status.style.display = "none";
+    }, 2500);
     return;
   }
 
@@ -89,6 +95,10 @@ document.getElementById("run").addEventListener("click", async () => {
   status.style.setProperty('--progress', '0%');
   runBtn.disabled = false;
   running = false;
+  
+  setTimeout(() => {
+    status.style.display = "none";
+  }, 3000);
 });
 
 document.getElementById("stop").addEventListener("click", () => {
