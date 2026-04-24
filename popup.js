@@ -120,7 +120,7 @@ function waitForLoad(tabId) {
   });
 }
 
-function waitForSubmission(tabId, delay = 2000) {
+function waitForSubmission(tabId, delay = 4000) {
   return new Promise(resolve => {
     // Adjust timeouts based on delay
     const initialDelay = Math.max(300, Math.floor(delay * 0.6));
