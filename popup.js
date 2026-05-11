@@ -1,9 +1,18 @@
 let running = false;
+let activeTab = null;
 
 function updateProgress(current, total) {
   const percentage = (current / total) * 100;
   const statusEl = document.getElementById("status");
   statusEl.style.setProperty('--progress', percentage + '%');
+}
+
+// Handle tab closure/errors
+function handleTabError(error, tabId) {
+  console.error('Tab error:', error);
+  if (activeTab && activeTab.id === tabId) {
+    activeTab = null;
+  }
 }
 
 document.getElementById("run").addEventListener("click", async () => {
@@ -71,58 +80,102 @@ document.getElementById("run").addEventListener("click", async () => {
   status.innerText = "📂 Opening form...";
   status.className = "processing";
 
-  let tab = await chrome.tabs.create({ url: formUrl, active: false });
-
-  updateProgress(0, count);
-
-  // Store total count and form type in tab storage for content script
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: (cnt, fType) => {
-      sessionStorage.setItem('totalFormCount', cnt);
-      sessionStorage.setItem('submissionCount', '0');
-      sessionStorage.setItem('formType', fType);
-    },
-    args: [count, formType]
-  });
-
-  for (let i = 0; i < count; i++) {
-
-    if (!running) break;
-
-    status.innerText = `⏳ Processing ${i + 1}/${count}`;
-    status.className = "processing";
-
-    updateProgress(i + 1, count);
-
-    await waitForLoad(tab.id);
-
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["content.js"]
+  try {
+    // Create tab with error handling
+    activeTab = await chrome.tabs.create({ url: formUrl, active: false }).catch(err => {
+      throw new Error('Failed to create tab: ' + err.message);
     });
 
-    await waitForSubmission(tab.id, delay, formType);
+    updateProgress(0, count);
 
-    await sleep(delay);
+    // Store total count and form type in tab storage for content script
+    chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      func: (cnt, fType) => {
+        sessionStorage.setItem('totalFormCount', cnt);
+        sessionStorage.setItem('submissionCount', '0');
+        sessionStorage.setItem('formType', fType);
+      },
+      args: [count, formType]
+    });
 
-    await chrome.tabs.update(tab.id, { url: formUrl });
+    for (let i = 0; i < count; i++) {
+
+      if (!running) break;
+
+      // Check if tab still exists
+      try {
+        await chrome.tabs.get(activeTab.id);
+      } catch (err) {
+        status.innerText = "⚠️ Tab was closed. Restarting...";
+        status.className = "error";
+        // Try to recreate the tab
+        activeTab = await chrome.tabs.create({ url: formUrl, active: false });
+        await sleep(1000);
+      }
+
+      status.innerText = `⏳ Processing ${i + 1}/${count}`;
+      status.className = "processing";
+
+      updateProgress(i + 1, count);
+
+      await waitForLoad(activeTab.id);
+
+      await chrome.scripting.executeScript({
+        target: { tabId: activeTab.id },
+        files: ["content.js"]
+      });
+
+      await waitForSubmission(activeTab.id, delay, formType);
+
+      await sleep(delay);
+
+      // Safely update tab
+      try {
+        await chrome.tabs.update(activeTab.id, { url: formUrl });
+      } catch (err) {
+        console.error('Failed to update tab:', err);
+        // Recreate tab if update fails
+        activeTab = await chrome.tabs.create({ url: formUrl, active: false });
+      }
+    }
+
+    status.innerText = running ? "✅ All Done!" : "⛔ Stopped";
+    status.className = running ? "success" : "error";
+    document.getElementById("stop").style.display = "none";
+    status.style.setProperty('--progress', '0%');
+    
+    // Close the tab after completion
+    if (activeTab) {
+      try {
+        await chrome.tabs.remove(activeTab.id);
+      } catch (err) {
+        console.error('Failed to close tab:', err);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error:', error);
+    status.innerText = `❌ Error: ${error.message}`;
+    status.className = "error";
+    
+    // Try to close tab on error
+    if (activeTab) {
+      try {
+        await chrome.tabs.remove(activeTab.id);
+      } catch (err) {
+        console.error('Failed to close tab on error:', err);
+      }
+    }
+  } finally {
+    runBtn.disabled = false;
+    running = false;
+    activeTab = null;
+    
+    setTimeout(() => {
+      status.style.display = "none";
+    }, 3000);
   }
-
-  status.innerText = running ? "Done ✅" : "Stopped ⛔";
-  status.className = running ? "success" : "error";
-  document.getElementById("stop").style.display = "none";
-  status.style.setProperty('--progress', '0%');
-  
-  // Close the tab after completion
-  await chrome.tabs.remove(tab.id);
-  
-  runBtn.disabled = false;
-  running = false;
-  
-  setTimeout(() => {
-    status.style.display = "none";
-  }, 3000);
 });
 
 document.getElementById("stop").addEventListener("click", () => {
