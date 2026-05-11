@@ -25,8 +25,30 @@ document.getElementById("run").addEventListener("click", async () => {
   document.getElementById("stop").style.display = "block";
   status.style.display = "block";
 
-  let match = input.match(/[-\w]{25,}/);
-  if (!match) {
+  // Detect form type and extract ID
+  let formType = null;
+  let formUrl = null;
+
+  // Check if it's Microsoft Forms
+  if (input.includes("forms.office.com")) {
+    formType = "microsoft";
+    // Extract form ID from Microsoft Forms URL
+    let match = input.match(/forms\.office\.com\/r\/([a-zA-Z0-9]+)|id=([a-zA-Z0-9]+)/);
+    if (match) {
+      let formId = match[1] || match[2];
+      formUrl = `https://forms.office.com/r/${formId}`;
+    }
+  } else {
+    // Assume Google Forms
+    formType = "google";
+    let match = input.match(/[-\w]{25,}/);
+    if (match) {
+      let formId = match[0];
+      formUrl = `https://docs.google.com/forms/d/e/${formId}/viewform`;
+    }
+  }
+
+  if (!formUrl) {
     status.innerText = "❌ Invalid Form Link";
     status.className = "error";
     runBtn.disabled = false;
@@ -36,9 +58,6 @@ document.getElementById("run").addEventListener("click", async () => {
     }, 2500);
     return;
   }
-
-  let formId = match[0];
-  let formUrl = `https://docs.google.com/forms/d/e/${formId}/viewform`;
 
   let delay;
   switch(mode) {
@@ -56,14 +75,15 @@ document.getElementById("run").addEventListener("click", async () => {
 
   updateProgress(0, count);
 
-  // Store total count in tab storage for content script
+  // Store total count and form type in tab storage for content script
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: (cnt) => {
+    func: (cnt, fType) => {
       sessionStorage.setItem('totalFormCount', cnt);
       sessionStorage.setItem('submissionCount', '0');
+      sessionStorage.setItem('formType', fType);
     },
-    args: [count]
+    args: [count, formType]
   });
 
   for (let i = 0; i < count; i++) {
@@ -82,7 +102,7 @@ document.getElementById("run").addEventListener("click", async () => {
       files: ["content.js"]
     });
 
-    await waitForSubmission(tab.id, delay);
+    await waitForSubmission(tab.id, delay, formType);
 
     await sleep(delay);
 
@@ -120,7 +140,7 @@ function waitForLoad(tabId) {
   });
 }
 
-function waitForSubmission(tabId, delay = 2000) {
+function waitForSubmission(tabId, delay = 2000, formType = "google") {
   return new Promise(resolve => {
     // Adjust timeouts based on delay
     const initialDelay = Math.max(300, Math.floor(delay * 0.6));
@@ -129,10 +149,17 @@ function waitForSubmission(tabId, delay = 2000) {
     const check = async () => {
       let [res] = await chrome.scripting.executeScript({
         target: { tabId: tabId },
-        func: () => {
+        func: (fType) => {
           let t = document.body.innerText.toLowerCase();
-          return t.includes("response") || t.includes("thank");
-        }
+          if (fType === "microsoft") {
+            // Microsoft Forms shows different confirmation messages
+            return t.includes("thank") || t.includes("thanks") || t.includes("submitted") || t.includes("response received");
+          } else {
+            // Google Forms messages
+            return t.includes("response") || t.includes("thank");
+          }
+        },
+        args: [formType]
       });
 
       if (res.result) resolve();
