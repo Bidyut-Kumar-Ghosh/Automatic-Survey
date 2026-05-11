@@ -232,3 +232,23 @@ function waitForSubmission(tabId, delay = 2000, formType = "google") {
     setTimeout(check, initialDelay);
   });
 }
+
+// Updates button event listener
+document.querySelector('.updates-btn').addEventListener('click', () => {
+  const modal = document.getElementById('updatesModal');
+  modal.classList.add('active');
+});
+
+// Close button event listener
+document.getElementById('closeUpdatesBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const modal = document.getElementById('updatesModal');
+  modal.classList.remove('active');
+});
+
+// Close modal when clicking outside content (on background)
+document.getElementById('updatesModal').addEventListener('click', (e) => {
+  if (e.target.id === 'updatesModal') {
+    e.target.classList.remove('active');
+  }
+});

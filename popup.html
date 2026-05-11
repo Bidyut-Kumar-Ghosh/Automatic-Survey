@@ -1,22 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>FormFlow</title>
+
   <style>
     * {
-      margin: 10;
+      margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
     body {
       font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      padding: 10px;
+      padding: 14px;
       width: 360px;
-      height: 98vh;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 30%, #312e81 60%, #1e3a8a 100%);
-      position: relative;
+      min-height: 100vh;
+      background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #1e1b4b 30%,
+        #312e81 60%,
+        #1e3a8a 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
+      position: relative;
     }
 
     body::before {
@@ -26,131 +39,169 @@
       right: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 50%);
+      background:
+        radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 50%);
       pointer-events: none;
       animation: gradientShift 20s ease infinite;
     }
 
     @keyframes gradientShift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(15px, -15px) scale(1.1); }
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      50% {
+        transform: translate(15px, -15px) scale(1.1);
+      }
     }
 
     .container {
       position: relative;
       z-index: 1;
+      width: 100%;
       background: rgba(255, 255, 255, 0.97);
       backdrop-filter: blur(30px);
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      height: 98%;
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+
       display: flex;
       flex-direction: column;
+      gap: 18px;
     }
 
     .header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 12px;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
+      padding-bottom: 18px;
       border-bottom: 2px solid;
-      border-image: linear-gradient(90deg, #8b5cf6 0%, #ec4899 50%, #f87171 100%) 1;
-      animation: slideDown 0.6s ease-out;
-      position: relative;
+      border-image: linear-gradient(
+        90deg,
+        #8b5cf6 0%,
+        #ec4899 50%,
+        #f87171 100%
+      ) 1;
+    }
+
+    .header-icon,
+    .updates-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .header-icon {
-      font-size: 32px;
+      font-size: 30px;
       animation: bounce 2.5s ease-in-out infinite;
-      position: absolute;
-      left: 0;
+    }
+
+    .header-center {
+      flex: 1;
+      text-align: center;
     }
 
     h3 {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 800;
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
+      line-height: 1.1;
+      margin-bottom: 4px;
+
+      background: linear-gradient(
+        135deg,
+        #8b5cf6 0%,
+        #ec4899 50%,
+        #f97316 100%
+      );
+
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      letter-spacing: -0.5px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      font-size: 11px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
     .form-group {
-      margin-bottom: 14px;
-      animation: slideUp 0.5s ease-out backwards;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-
-    .form-group:nth-child(2) { animation-delay: 0.1s; }
-    .form-group:nth-child(3) { animation-delay: 0.2s; }
-    .form-group:nth-child(4) { animation-delay: 0.3s; }
 
     label {
       font-size: 11px;
       color: #8b5cf6;
-      display: block;
-      margin-bottom: 6px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1px;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 2px solid;
-      border-color: #e5e7eb;
-      font-size: 13px;
+      min-height: 54px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 2px solid #e5e7eb;
+      font-size: 14px;
       font-family: inherit;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
       color: #1f2937;
-    }
-
-    input:hover, select:hover {
-      border-color: #8b5cf6;
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      background: white;
-      box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.1),
-                  0 8px 20px rgba(139, 92, 246, 0.2);
-      transform: translateY(-1px);
+      transition: all 0.3s ease;
     }
 
     input::placeholder {
       color: #9ca3af;
     }
 
+    input:hover,
+    select:hover {
+      border-color: #8b5cf6;
+      background: white;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      background: white;
+      box-shadow:
+        0 0 0 5px rgba(139, 92, 246, 0.1),
+        0 8px 20px rgba(139, 92, 246, 0.15);
+      transform: translateY(-1px);
+    }
+
     .button-group {
       display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      animation: slideUp 0.7s ease-out;
+      gap: 12px;
+      margin-top: 4px;
     }
 
     button {
       flex: 1;
-      padding: 13px 16px;
-      border-radius: 14px;
+      min-height: 52px;
+      border-radius: 16px;
       border: none;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 12px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-transform: uppercase;
       letter-spacing: 0.6px;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -163,10 +214,9 @@
       width: 0;
       height: 0;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.35);
       transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-      pointer-events: none;
+      transition: width 0.5s, height 0.5s;
     }
 
     button:active::before {
@@ -177,88 +227,48 @@
     #run {
       background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
       color: white;
-      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
     }
 
     #run:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    #run:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: scale(0.98);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 35px rgba(139, 92, 246, 0.35);
     }
 
     #stop {
+      display: none;
       background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
       color: white;
-      display: none;
-      box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 25px rgba(249, 115, 22, 0.25);
     }
 
     #stop:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(249, 115, 22, 0.4),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     #status {
-      margin-top: 14px;
+      display: none;
       padding: 14px 16px;
-      border-radius: 14px;
+      border-radius: 16px;
       font-size: 13px;
       font-weight: 700;
-      background: linear-gradient(135deg, #f0f4ff 0%, #fafbff 100%);
-      color: #8b5cf6;
       text-align: center;
       border: 2px solid #e5e7eb;
-      animation: slideUp 0.5s ease-out;
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.3px;
-      display: none;
-    }
 
-    #status::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%);
-      width: 0%;
-      z-index: 0;
-      opacity: 0.12;
-      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    #status > * {
-      position: relative;
-      z-index: 1;
+      background: linear-gradient(135deg, #f0f4ff 0%, #fafbff 100%);
+      color: #8b5cf6;
     }
 
     #status.processing {
       background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
       color: #d97706;
       border-color: #fcd34d;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    #status.processing::before {
-      background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
-      width: var(--progress, 0%);
     }
 
     #status.success {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
       color: #16a34a;
       border-color: #86efac;
-      animation: slideUp 0.5s ease-out;
     }
 
     #status.error {
@@ -267,91 +277,227 @@
       border-color: #fca5a5;
     }
 
-    .progress-container {
-      display: none;
-    }
-
-    .progress-bar {
-      display: none;
-    }
-
-    .progress-text {
-      display: none;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
     .footer {
-      margin-top: auto;
-      padding: 14px 0 10px 0;
+      margin-top: 6px;
+      padding-top: 18px;
       border-top: 2px solid;
-      border-image: linear-gradient(90deg, #8b5cf6, #ec4899, #f97316) 1;
-      font-size: 11px;
+      border-image: linear-gradient(
+        90deg,
+        #8b5cf6,
+        #ec4899,
+        #f97316
+      ) 1;
+
       text-align: center;
+      font-size: 12px;
       font-weight: 600;
       font-style: italic;
-      letter-spacing: 0.9px;
-      animation: slideUp 0.8s ease-out;
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
+      letter-spacing: 0.6px;
+
+      background: linear-gradient(
+        135deg,
+        #8b5cf6 0%,
+        #ec4899 50%,
+        #f97316 100%
+      );
+
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
+    .updates-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .updates-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    .updates-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .updates-modal.active {
+      display: flex;
+    }
+
+    .updates-content {
+      width: 100%;
+      max-width: 420px;
+      max-height: 500px;
+      overflow-y: auto;
+      background: white;
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .updates-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f3f4f6;
+    }
+
+    .updates-header h2 {
+      font-size: 18px;
+
+      background: linear-gradient(
+        135deg,
+        #8b5cf6 0%,
+        #ec4899 100%
+      );
+
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: #e5e7eb;
+      transform: rotate(90deg);
+    }
+
+    .version-item {
+      margin-bottom: 16px;
+      padding: 14px;
+      background: #f9fafb;
+      border-left: 4px solid #8b5cf6;
+      border-radius: 12px;
+    }
+
+    .version-item.latest {
+      border-left-color: #ec4899;
+      background: linear-gradient(
+        135deg,
+        #faf5ff 0%,
+        #fff5fb 100%
+      );
+    }
+
+    .version-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .version-date {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .version-changes {
+      font-size: 12px;
+      color: #4b5563;
+      padding-left: 18px;
+      line-height: 1.7;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.25);
+        opacity: 0.7;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <div class="container">
+
     <div class="header">
+
       <div class="header-icon">🚀</div>
-      <div>
+
+      <div class="header-center">
         <h3>FormFlow</h3>
+        <span class="version-badge">v2.5</span>
       </div>
+
+      <button class="updates-btn" title="View updates">
+        📢
+        <span class="notification-dot"></span>
+      </button>
+
     </div>
 
     <div class="form-group">
       <label>📋 Form Link / ID (Google or Microsoft)</label>
-      <input id="formId" placeholder="Paste Google Forms or Microsoft Forms link" />
+
+      <input
+        id="formId"
+        type="text"
+        placeholder="Paste Google Forms or Microsoft Forms link"
+      />
     </div>
 
     <div class="form-group">
       <label>🔢 Responses Count</label>
-      <input id="count" type="number" value="10" min="1" />
+
+      <input
+        id="count"
+        type="number"
+        value="10"
+        min="1"
+      />
     </div>
 
     <div class="form-group">
       <label>⚡ Speed</label>
+
       <select id="mode">
         <option value="ultra">⚡⚡ Ultra Fast (300ms)</option>
         <option value="fast">⚡ Fast (800ms)</option>
@@ -365,20 +511,75 @@
       <button id="stop">⏹ Stop</button>
     </div>
 
-    <div class="progress-container">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="progress-text" id="progressText">0%</div>
-    </div>
-
     <div id="status">🔄 Idle</div>
 
     <div class="footer">
       ✨ Created by Bidyut Kumar Ghosh
     </div>
+
+  </div>
+
+  <!-- Updates Modal -->
+
+  <div class="updates-modal" id="updatesModal">
+
+    <div class="updates-content">
+
+      <div class="updates-header">
+        <h2>📝 Updates & Changelog</h2>
+
+        <button class="close-btn" id="closeUpdatesBtn">
+          ✕
+        </button>
+      </div>
+
+      <div class="version-item latest">
+
+        <div class="version-title">
+          v2.5 - Latest Release
+        </div>
+
+        <div class="version-date">
+          December 2024
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Dual-platform support</li>
+          <li>✅ Fixed question loading</li>
+          <li>✅ Added support for all question types</li>
+          <li>✅ Improved tab management</li>
+          <li>✅ Modern glassmorphism UI</li>
+          <li>✅ Better lazy-load handling</li>
+          <li>✅ Enhanced performance and stability</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v2.0 - Initial Release
+        </div>
+
+        <div class="version-date">
+          November 2024
+        </div>
+
+        <ul class="version-changes">
+          <li>🚀 Initial release</li>
+          <li>✅ Google Forms support</li>
+          <li>✅ Automation support</li>
+          <li>✅ Speed controls</li>
+          <li>✅ Basic UI system</li>
+        </ul>
+
+      </div>
+
+    </div>
+
   </div>
 
   <script src="popup.js"></script>
+
 </body>
 </html>
