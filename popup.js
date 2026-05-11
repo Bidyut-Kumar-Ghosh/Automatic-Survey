@@ -113,6 +113,10 @@ document.getElementById("run").addEventListener("click", async () => {
   status.className = running ? "success" : "error";
   document.getElementById("stop").style.display = "none";
   status.style.setProperty('--progress', '0%');
+  
+  // Close the tab after completion
+  await chrome.tabs.remove(tab.id);
+  
   runBtn.disabled = false;
   running = false;
   
@@ -142,11 +146,14 @@ function waitForLoad(tabId) {
 
 function waitForSubmission(tabId, delay = 2000, formType = "google") {
   return new Promise(resolve => {
-    // Adjust timeouts based on delay
-    const initialDelay = Math.max(300, Math.floor(delay * 0.6));
+    // Adjust timeouts based on delay, with longer initial delay for loading all questions
+    const initialDelay = Math.max(3000, Math.floor(delay * 1.2));
     const checkInterval = Math.max(500, Math.floor(delay * 0.5));
+    let maxChecks = 30; // Maximum number of checks before giving up
+    let checkCount = 0;
 
     const check = async () => {
+      checkCount++;
       let [res] = await chrome.scripting.executeScript({
         target: { tabId: tabId },
         func: (fType) => {
@@ -162,8 +169,11 @@ function waitForSubmission(tabId, delay = 2000, formType = "google") {
         args: [formType]
       });
 
-      if (res.result) resolve();
-      else setTimeout(check, checkInterval);
+      if (res.result || checkCount >= maxChecks) {
+        resolve();
+      } else {
+        setTimeout(check, checkInterval);
+      }
     };
 
     setTimeout(check, initialDelay);
