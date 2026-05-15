@@ -150,3 +150,7 @@ For issues, suggestions, or feature requests, please open an issue on the reposi
 **Developer:** Bidyut Kumar Ghosh  
 **Last Updated:** December 2024  
 **Current Version:** 2.5
+
+
+
+New Update Coming Soon
