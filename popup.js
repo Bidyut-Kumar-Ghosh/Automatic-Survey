@@ -15,6 +15,55 @@ function handleTabError(error, tabId) {
   }
 }
 
+function detectGoogleFormUrl(input) {
+  const value = String(input || '').trim();
+  if (!value) return null;
+
+  const lowered = value.toLowerCase();
+
+  if (lowered.includes('forms.gle')) {
+    const match = value.match(/forms\.gle\/([A-Za-z0-9_-]+)/i);
+    if (match) {
+      return { formType: 'google', formUrl: `https://forms.gle/${match[1]}` };
+    }
+  }
+
+  if (lowered.includes('docs.google.com') || lowered.includes('google.com/forms')) {
+    const match = value.match(/(?:docs\.google\.com\/forms(?:\/u\/\d+)?\/d\/|google\.com\/forms\/d\/|\/d\/(?:e\/)?)([A-Za-z0-9_-]+)/i)
+      || value.match(/(?:\b|_)id=([A-Za-z0-9_-]{10,})(?:&|$)/i);
+
+    if (match) {
+      const formId = match[1];
+      return { formType: 'google', formUrl: `https://docs.google.com/forms/d/${formId}/viewform` };
+    }
+  }
+
+  const directId = value.match(/^[A-Za-z0-9_-]{10,}$/);
+  if (directId) {
+    return { formType: 'google', formUrl: `https://docs.google.com/forms/d/${directId[0]}/viewform` };
+  }
+
+  return null;
+}
+
+function detectMicrosoftFormUrl(input) {
+  const value = String(input || '').trim();
+  if (!value) return null;
+
+  const match = value.match(/forms\.office\.com\/(?:r\/|.*?[?&](?:id|formId|formid)=)([A-Za-z0-9]+)/i)
+    || value.match(/forms\.office\.com\/.*/i);
+
+  if (match) {
+    const formId = match[1] || value.match(/(?:r\/|id=)([A-Za-z0-9]+)/i)?.[1];
+    if (formId) {
+      return { formType: 'microsoft', formUrl: `https://forms.office.com/r/${formId}` };
+    }
+    return { formType: 'microsoft', formUrl: value };
+  }
+
+  return null;
+}
+
 document.getElementById("run").addEventListener("click", async () => {
 
   // Prevent starting if already running
@@ -38,23 +87,15 @@ document.getElementById("run").addEventListener("click", async () => {
   let formType = null;
   let formUrl = null;
 
-  // Check if it's Microsoft Forms
-  if (input.includes("forms.office.com")) {
-    formType = "microsoft";
-    // Extract form ID from Microsoft Forms URL
-    let match = input.match(/forms\.office\.com\/r\/([a-zA-Z0-9]+)|id=([a-zA-Z0-9]+)/);
-    if (match) {
-      let formId = match[1] || match[2];
-      formUrl = `https://forms.office.com/r/${formId}`;
-    }
-  } else {
-    // Assume Google Forms
-    formType = "google";
-    let match = input.match(/[-\w]{25,}/);
-    if (match) {
-      let formId = match[0];
-      formUrl = `https://docs.google.com/forms/d/e/${formId}/viewform`;
-    }
+  const microsoftMatch = detectMicrosoftFormUrl(input);
+  const googleMatch = detectGoogleFormUrl(input);
+
+  if (microsoftMatch) {
+    formType = microsoftMatch.formType;
+    formUrl = microsoftMatch.formUrl;
+  } else if (googleMatch) {
+    formType = googleMatch.formType;
+    formUrl = googleMatch.formUrl;
   }
 
   if (!formUrl) {
