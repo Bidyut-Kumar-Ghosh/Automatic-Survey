@@ -2,68 +2,130 @@
 
   let formType = sessionStorage.getItem('formType') || 'google';
 
-  function selectOptionByDistribution(options, submissionIndex, totalCount, distributionType) {
-    if (!options.length) return false;
-    
-    const numOptions = options.length;
-    let weights = [];
-    
-    // Different distribution patterns for variety
-    switch(distributionType) {
-      case 'descending':
-        // Descending: 1, 0.5, 0.25, 0.125...
-        for (let i = 0; i < numOptions; i++) {
-          weights[i] = 1 / Math.pow(2, i);
-        }
-        break;
-      case 'ascending':
-        // Ascending: 0.125, 0.25, 0.5, 1 (reverse)
-        for (let i = 0; i < numOptions; i++) {
-          weights[i] = 1 / Math.pow(2, numOptions - 1 - i);
-        }
-        break;
-      case 'uniform':
-        // Uniform: equal distribution
-        for (let i = 0; i < numOptions; i++) {
-          weights[i] = 1;
-        }
-        break;
-      case 'gaussian':
-        // Gaussian: peak in middle
-        for (let i = 0; i < numOptions; i++) {
-          let center = (numOptions - 1) / 2;
-          weights[i] = Math.exp(-Math.pow(i - center, 2) / (numOptions / 2));
-        }
-        break;
-      default:
-        for (let i = 0; i < numOptions; i++) {
-          weights[i] = 1 / Math.pow(2, i);
-        }
-    }
-    
-    // Normalize weights
-    let totalWeight = weights.reduce((a, b) => a + b, 0);
-    let distribution = weights.map(w => Math.round((w / totalWeight) * totalCount));
-    
-    // Calculate cumulative distribution
-    let cumulative = 0;
-    for (let i = 0; i < numOptions; i++) {
-      cumulative += distribution[i];
-      if (submissionIndex < cumulative) {
-        options[i].click();
-        return true;
-      }
-    }
-    
-    // Fallback to last option
-    options[numOptions - 1].click();
-    return true;
+  function randomChoice(items) {
+    if (!items || !items.length) return null;
+    return items[Math.floor(Math.random() * items.length)];
   }
 
   function randomClick(options) {
-    if (!options.length) return false;
-    options[Math.floor(Math.random() * options.length)].click();
+    const choice = randomChoice(Array.from(options));
+    if (!choice) return false;
+    choice.click();
     return true;
+  }
+
+  function randomTextValue() {
+    const words = ['alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot', 'golf', 'hotel', 'india', 'juliet', 'kilo', 'lima', 'mike', 'november', 'oscar', 'papa', 'quebec', 'romeo', 'sierra', 'tango', 'uniform', 'victor', 'whiskey', 'xray', 'yankee', 'zulu'];
+    const count = 2 + Math.floor(Math.random() * 3);
+    const text = Array.from({ length: count }, () => randomChoice(words)).join(' ');
+    return `${text} ${Math.floor(Math.random() * 900 + 100)}`;
+  }
+
+  function normalizeText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/[^a-z0-9\s\-–]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function getQuestionText(element) {
+    if (!element) return '';
+    const textBits = [
+      element.innerText,
+      element.textContent,
+      element.getAttribute('aria-label'),
+      element.getAttribute('title')
+    ];
+    return textBits.filter(Boolean).join(' ');
+  }
+
+  function getAgeBounds(questionText) {
+    const text = normalizeText(questionText);
+    const lowerMatch = text.match(/(?:minimum|min|lowest|lower|from|at least|older than|over|above)\s*(\d{1,3})/i);
+    const upperMatch = text.match(/(?:maximum|max|highest|upper|no more than|up to|under|below|less than|younger than|before)\s*(\d{1,3})/i);
+
+    let minAge = 18;
+    let maxAge = 65;
+
+    if (lowerMatch && Number(lowerMatch[1])) {
+      minAge = Math.max(0, Number(lowerMatch[1]));
+    }
+    if (upperMatch && Number(upperMatch[1])) {
+      maxAge = Math.max(minAge + 1, Number(upperMatch[1]));
+    }
+
+    return { min: minAge, max: maxAge };
+  }
+
+  function pickAgeOption(options, questionText) {
+    const text = normalizeText(questionText);
+    if (!/(age|years old|years of age|how old|birth year|date of birth)/i.test(text)) {
+      return null;
+    }
+
+    const bounds = getAgeBounds(questionText);
+    const entries = Array.from(options).map(option => {
+      const label = normalizeText(option.textContent || option.value || option.getAttribute('aria-label') || '');
+      const rangeMatch = label.match(/(\d{1,3})\s*(?:-|–|to)\s*(\d{1,3})/);
+      const singleMatch = label.match(/\b(\d{1,3})\b/);
+      const firstNum = rangeMatch ? Number(rangeMatch[1]) : singleMatch ? Number(singleMatch[1]) : null;
+      const secondNum = rangeMatch ? Number(rangeMatch[2]) : null;
+
+      return {
+        option,
+        firstNum,
+        secondNum,
+        label
+      };
+    });
+
+    const validEntries = entries.filter(({ firstNum, secondNum }) => {
+      if (firstNum === null && secondNum === null) return true;
+      if (secondNum !== null) return firstNum >= bounds.min && secondNum <= bounds.max;
+      return firstNum >= bounds.min && firstNum <= bounds.max;
+    });
+
+    if (validEntries.length > 0) {
+      return validEntries[Math.floor(Math.random() * validEntries.length)].option;
+    }
+
+    const fallback = entries[Math.floor(Math.random() * entries.length)];
+    return fallback ? fallback.option : null;
+  }
+
+  function pickEducationOption(options, questionText) {
+    const text = normalizeText(questionText);
+    if (!/(education|educational|school|degree|qualification|academic|highest level|study)/i.test(text)) {
+      return null;
+    }
+
+    const priority = [
+      { pattern: /(doctorate|phd|professional degree|md|jd|law degree|medical degree)/i, value: 7 },
+      { pattern: /(master|msc|mba|postgraduate|graduate degree)/i, value: 6 },
+      { pattern: /(bachelor|undergraduate|degree)/i, value: 5 },
+      { pattern: /(associate|technical|diploma|trade|community college)/i, value: 4 },
+      { pattern: /(some college|college|certificate)/i, value: 3 },
+      { pattern: /(high school|secondary|ged|diploma)/i, value: 2 },
+      { pattern: /(primary|middle school|elementary|junior high)/i, value: 1 },
+      { pattern: /(no formal|none|not completed)/i, value: 0 }
+    ];
+
+    const entries = Array.from(options).map(option => {
+      const label = normalizeText(option.textContent || option.value || option.getAttribute('aria-label') || '');
+      const score = priority.find(item => item.pattern.test(label))?.value || 0;
+      return { option, score, label };
+    });
+
+    const best = entries.filter(({ score }) => score > 0);
+    if (best.length > 0) {
+      const topScore = Math.max(...best.map(entry => entry.score));
+      const candidates = best.filter(entry => entry.score === topScore);
+      return candidates[Math.floor(Math.random() * candidates.length)].option;
+    }
+
+    return entries.length > 0 ? entries[Math.floor(Math.random() * entries.length)].option : null;
   }
 
   // Scroll to load all questions
@@ -96,8 +158,6 @@
       await loadAllQuestions();
 
       let submissionCount = parseInt(sessionStorage.getItem('submissionCount') || '0');
-      let totalCount = parseInt(sessionStorage.getItem('totalFormCount') || '50');
-      const distributionPatterns = ['descending', 'ascending', 'uniform', 'gaussian', 'random'];
       let questionIndex = 0;
 
       // Find ALL question containers (works for all question types)
@@ -106,17 +166,12 @@
       console.log(`Found ${questionContainers.length} questions to fill`);
     
     questionContainers.forEach((container, index) => {
-      const patternIndex = questionIndex % distributionPatterns.length;
-      const pattern = distributionPatterns[patternIndex];
+      const questionText = getQuestionText(container);
 
       // 1. Radio buttons (Single choice)
       const radioOptions = container.querySelectorAll('[role="radio"]');
       if (radioOptions.length > 0) {
-        if (pattern === 'random') {
-          randomClick(radioOptions);
-        } else {
-          selectOptionByDistribution(radioOptions, submissionCount, totalCount, pattern);
-        }
+        randomClick(radioOptions);
         questionIndex++;
         return;
       }
@@ -141,11 +196,20 @@
         selectElements.forEach(select => {
           const options = select.querySelectorAll('option, [role="option"]');
           if (options.length > 0) {
-            // Skip first option if it's placeholder
             const validOptions = Array.from(options).filter(o => o.value && o.textContent.trim());
-            if (validOptions.length > 0) {
-              validOptions[Math.floor(Math.random() * validOptions.length)].click();
+            const ageChoice = pickAgeOption(validOptions, questionText);
+            const educationChoice = pickEducationOption(validOptions, questionText);
+
+            if (ageChoice) {
+              ageChoice.click();
+              return;
             }
+            if (educationChoice) {
+              educationChoice.click();
+              return;
+            }
+
+            validOptions[Math.floor(Math.random() * validOptions.length)].click();
           }
         });
         questionIndex++;
@@ -156,7 +220,13 @@
       const textInputs = container.querySelectorAll('input[type="text"], textarea');
       if (textInputs.length > 0) {
         textInputs.forEach(input => {
-          input.value = `Response ${submissionCount + 1}`;
+          const ageBounds = getAgeBounds(questionText);
+          if (/(age|years old|years of age|how old|birth year|date of birth)/i.test(questionText)) {
+            const ageValue = Math.floor(Math.random() * (ageBounds.max - ageBounds.min + 1)) + ageBounds.min;
+            input.value = String(ageValue);
+          } else {
+            input.value = randomTextValue();
+          }
           input.dispatchEvent(new Event('input', { bubbles: true }));
           input.dispatchEvent(new Event('change', { bubbles: true }));
         });
@@ -215,8 +285,6 @@
       await loadAllQuestions();
 
       let submissionCount = parseInt(sessionStorage.getItem('submissionCount') || '0');
-      let totalCount = parseInt(sessionStorage.getItem('totalFormCount') || '50');
-      const distributionPatterns = ['descending', 'ascending', 'uniform', 'gaussian', 'random'];
       let questionIndex = 0;
 
       // Find all question items in Microsoft Forms
@@ -225,17 +293,12 @@
       console.log(`Found ${questionItems.length} questions to fill`);
     
       questionItems.forEach((item) => {
-      const patternIndex = questionIndex % distributionPatterns.length;
-      const pattern = distributionPatterns[patternIndex];
+      const questionText = getQuestionText(item);
 
       // 1. Radio buttons (single choice)
       let options = item.querySelectorAll('input[type="radio"]');
       if (options.length > 0) {
-        if (pattern === 'random') {
-          randomClick(options);
-        } else {
-          selectOptionByDistribution(options, submissionCount, totalCount, pattern);
-        }
+        randomClick(options);
         questionIndex++;
         return;
       }
@@ -257,7 +320,13 @@
       const textInputs = item.querySelectorAll('input[type="text"], textarea, .form-input');
       if (textInputs.length > 0) {
         textInputs.forEach(input => {
-          input.value = `Response ${submissionCount + 1}`;
+          const ageBounds = getAgeBounds(questionText);
+          if (/(age|years old|years of age|how old|birth year|date of birth)/i.test(questionText)) {
+            const ageValue = Math.floor(Math.random() * (ageBounds.max - ageBounds.min + 1)) + ageBounds.min;
+            input.value = String(ageValue);
+          } else {
+            input.value = randomTextValue();
+          }
           input.dispatchEvent(new Event('input', { bubbles: true }));
           input.dispatchEvent(new Event('change', { bubbles: true }));
         });
