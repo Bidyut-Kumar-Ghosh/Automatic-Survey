@@ -84,13 +84,12 @@
     const prompt = element.querySelector(
       '[role="heading"], [data-automation-id="questionTitle"], .M7eMe'
     ) || element;
-    const textBits = [
-      prompt.innerText,
-      prompt.textContent,
-      prompt.getAttribute('aria-label'),
-      prompt.getAttribute('title')
-    ];
-    return textBits.filter(Boolean).join(' ');
+    const text = prompt.innerText ||
+      prompt.textContent ||
+      prompt.getAttribute('aria-label') ||
+      prompt.getAttribute('title') ||
+      '';
+    return String(text).replace(/\s+/g, ' ').trim();
   }
 
   function getAgeBounds(questionText) {

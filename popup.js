@@ -522,9 +522,10 @@ function initPopup() {
         }
       }
 
-      status.innerText = submissionError
+      const finalStatus = submissionError
         ? `❌ ${submissionError}`
         : running ? "✅ All Done!" : "⛔ Stopped";
+      status.innerText = finalStatus;
       status.className = submissionError ? "error" : running ? "success" : "error";
       stopBtn.style.display = "none";
       status.style.setProperty('--progress', '0%');

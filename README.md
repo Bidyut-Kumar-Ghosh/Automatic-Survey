@@ -42,7 +42,13 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 📋 Version History
 
-### v2.8 - Latest Release (November 2026)
+### v3.1 - Latest Release (November 2026)
+**Extension cleanup**
+
+**Changes:**
+- ✅ Removed the optional local analytics feature and its host setup
+
+### v2.8 - Context-Aware Question Selection (November 2026)
 **Context-Aware Question Selection**
 
 **Changes:**
@@ -181,4 +187,4 @@ For issues, suggestions, or feature requests, please open an issue on the reposi
 
 **Developer:** Bidyut Kumar Ghosh  
 **Last Updated:** November 2026
-**Current Version:** 2.8
+**Current Version:** 3.1
