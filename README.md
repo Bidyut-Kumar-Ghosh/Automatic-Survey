@@ -10,6 +10,7 @@ FormFlow is a Chrome extension that automates the process of filling and submitt
 - Adjustable speed (ultra / fast / safe / slow modes)
 - Google Forms question preview with per-question answer distributions
 - Individual rating-scale selection before starting a Google Forms run
+- Context-aware choices for recognized age, education, frequency, and opinion questions
 - Real-time progress tracking
 - Start / Stop control
 - Intelligent response distribution patterns
@@ -22,7 +23,7 @@ FormFlow is a Chrome extension that automates the process of filling and submitt
 - Load testing and stress testing forms
 
 ### ⚙️ How It Works
-For Google Forms, load a question preview before starting. Set choice percentages for each choice question and select a value for each rating-scale question. Other supported question types retain automatic answers. Microsoft Forms continues to use automatic answer selection.
+For Google Forms, load a question preview before starting. Set choice percentages for each choice question and select a value for each rating-scale question; these settings take precedence over automatic selection. When no manual choice is configured, recognized age and education questions use their existing matching rules, while frequency and opinion scales prefer a neutral or middle option. Other questions retain random fallback behavior. Microsoft Forms uses the same contextual matching when the question and its options can be recognized.
 
 ### 🔧 Supported Platforms
 - ✅ **Google Forms** - `https://docs.google.com/forms/...`
@@ -41,7 +42,16 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 📋 Version History
 
-### v2.7 - Latest Release (November 2026)
+### v2.8 - Latest Release (November 2026)
+**Context-Aware Question Selection**
+
+**Changes:**
+- ✅ Added contextual matching for recognized age and education questions
+- ✅ Prefer neutral or middle options for frequency and opinion scales
+- ✅ Preserve configured Google Forms choice percentages and rating selections
+- ✅ Keep random fallback behavior when no matching rule applies
+
+### v2.7 - Per-Question Google Forms Setup (November 2026)
 **Per-Question Google Forms Setup**
 
 **Changes:**
@@ -139,10 +149,10 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 🔄 Migration Guide
 
-**From v2.6 to v2.7:**
+**From v2.7 to v2.8:**
 - No breaking changes
-- Google Forms now requires loading questions and choosing rating answers before starting
-- Microsoft Forms continues to use automatic answer selection
+- Google Forms choice percentages and rating selections continue to take precedence
+- Recognized questions may now receive a contextual neutral or matching option; other questions keep random fallback behavior
 
 ---
 
@@ -171,4 +181,4 @@ For issues, suggestions, or feature requests, please open an issue on the reposi
 
 **Developer:** Bidyut Kumar Ghosh  
 **Last Updated:** November 2026
-**Current Version:** 2.7
+**Current Version:** 2.8

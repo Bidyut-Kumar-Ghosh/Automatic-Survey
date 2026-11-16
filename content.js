@@ -81,11 +81,14 @@
 
   function getQuestionText(element) {
     if (!element) return '';
+    const prompt = element.querySelector(
+      '[role="heading"], [data-automation-id="questionTitle"], .M7eMe'
+    ) || element;
     const textBits = [
-      element.innerText,
-      element.textContent,
-      element.getAttribute('aria-label'),
-      element.getAttribute('title')
+      prompt.innerText,
+      prompt.textContent,
+      prompt.getAttribute('aria-label'),
+      prompt.getAttribute('title')
     ];
     return textBits.filter(Boolean).join(' ');
   }
@@ -108,15 +111,32 @@
     return { min: minAge, max: maxAge };
   }
 
+  function getOptionText(option) {
+    const labels = option.labels
+      ? Array.from(option.labels).map(label => label.innerText || label.textContent).filter(Boolean).join(' ')
+      : '';
+    const wrappedLabel = option.closest ? option.closest('label') : null;
+    return String(
+      option.getAttribute('aria-label') ||
+      labels ||
+      (wrappedLabel && (wrappedLabel.innerText || wrappedLabel.textContent)) ||
+      option.innerText ||
+      option.textContent ||
+      (option.parentElement && option.parentElement.innerText) ||
+      option.value ||
+      ''
+    ).trim();
+  }
+
   function pickAgeOption(options, questionText) {
     const text = normalizeText(questionText);
-    if (!/(age|years old|years of age|how old|birth year|date of birth)/i.test(text)) {
+    if (!/\b(age|years old|years of age|how old|birth year|date of birth)\b/i.test(text)) {
       return null;
     }
 
     const bounds = getAgeBounds(questionText);
     const entries = Array.from(options).map(option => {
-      const label = normalizeText(option.textContent || option.value || option.getAttribute('aria-label') || '');
+      const label = normalizeText(getOptionText(option));
       const rangeMatch = label.match(/(\d{1,3})\s*(?:-|–|to)\s*(\d{1,3})/);
       const singleMatch = label.match(/\b(\d{1,3})\b/);
       const firstNum = rangeMatch ? Number(rangeMatch[1]) : singleMatch ? Number(singleMatch[1]) : null;
@@ -162,7 +182,7 @@
     ];
 
     const entries = Array.from(options).map(option => {
-      const label = normalizeText(option.textContent || option.value || option.getAttribute('aria-label') || '');
+      const label = normalizeText(getOptionText(option));
       const score = priority.find(item => item.pattern.test(label))?.value || 0;
       return { option, score, label };
     });
@@ -175,6 +195,35 @@
     }
 
     return entries.length > 0 ? entries[Math.floor(Math.random() * entries.length)].option : null;
+  }
+
+  function pickContextualOption(options, questionText) {
+    const ageOption = pickAgeOption(options, questionText);
+    if (ageOption) return ageOption;
+
+    const educationOption = pickEducationOption(options, questionText);
+    if (educationOption) return educationOption;
+
+    const question = normalizeText(questionText);
+    const isFrequencyQuestion = /\b(how often|frequency|frequently|regularly|per day|per week|per month|per year)\b/i.test(question);
+    const isOpinionQuestion = /\b(satisf\w*|agree\w*|disagree\w*|recommend\w*|likely|likelihood|rating|rate|quality|easy|difficult|impact|important|extent|confident|experience)\b/i.test(question);
+    if (!isFrequencyQuestion && !isOpinionQuestion) {
+      return null;
+    }
+
+    const entries = Array.from(options).map(option => ({
+      option,
+      label: normalizeText(getOptionText(option))
+    }));
+    const neutralEntry = entries.find(({ label }) =>
+      /\b(neutral|neither|not sure|unsure|no preference|don t know|do not know|moderate|average|sometimes|occasionally)\b/i.test(label)
+    );
+
+    if (neutralEntry) {
+      return neutralEntry.option;
+    }
+
+    return entries.length > 0 ? entries[Math.floor(entries.length / 2)].option : null;
   }
 
   // Scroll to load all questions
@@ -223,7 +272,9 @@
       if (radioOptions.length > 0) {
         const selectedOption = settings && settings.kind === 'rating'
           ? radioOptions[settings.selectedIndex]
-          : weightedChoice(radioOptions, settings && settings.kind === 'choice' ? settings.weights : null);
+          : settings && settings.kind === 'choice'
+            ? weightedChoice(radioOptions, settings.weights)
+            : pickContextualOption(radioOptions, questionText) || weightedChoice(radioOptions);
         if (selectedOption) selectedOption.click();
         questionIndex++;
         return;
@@ -266,22 +317,9 @@
             const validOptions = Array.from(options).filter(o =>
               (o.value || o.getAttribute('role') === 'option') && o.textContent.trim()
             );
-            const ageChoice = settings && settings.kind === 'choice' ? null : pickAgeOption(validOptions, questionText);
-            const educationChoice = settings && settings.kind === 'choice' ? null : pickEducationOption(validOptions, questionText);
-
-            if (ageChoice) {
-              ageChoice.click();
-              return;
-            }
-            if (educationChoice) {
-              educationChoice.click();
-              return;
-            }
-
-            const selectedOption = weightedChoice(
-              validOptions,
-              settings && settings.kind === 'choice' ? settings.weights : null
-            );
+            const selectedOption = settings && settings.kind === 'choice'
+              ? weightedChoice(validOptions, settings.weights)
+              : pickContextualOption(validOptions, questionText) || weightedChoice(validOptions);
             if (selectedOption) selectedOption.click();
           }
         });
@@ -294,7 +332,7 @@
       if (textInputs.length > 0) {
         textInputs.forEach(input => {
           const ageBounds = getAgeBounds(questionText);
-          if (/(age|years old|years of age|how old|birth year|date of birth)/i.test(questionText)) {
+          if (/\b(age|years old|years of age|how old|birth year|date of birth)\b/i.test(questionText)) {
             const ageValue = Math.floor(Math.random() * (ageBounds.max - ageBounds.min + 1)) + ageBounds.min;
             input.value = String(ageValue);
           } else {
@@ -369,7 +407,12 @@
       // 1. Radio buttons (single choice)
       let options = item.querySelectorAll('input[type="radio"]');
       if (options.length > 0) {
-        randomClick(options);
+        const selectedOption = pickContextualOption(options, questionText);
+        if (selectedOption) {
+          selectedOption.click();
+        } else {
+          randomClick(options);
+        }
         questionIndex++;
         return;
       }
@@ -392,7 +435,7 @@
       if (textInputs.length > 0) {
         textInputs.forEach(input => {
           const ageBounds = getAgeBounds(questionText);
-          if (/(age|years old|years of age|how old|birth year|date of birth)/i.test(questionText)) {
+          if (/\b(age|years old|years of age|how old|birth year|date of birth)\b/i.test(questionText)) {
             const ageValue = Math.floor(Math.random() * (ageBounds.max - ageBounds.min + 1)) + ageBounds.min;
             input.value = String(ageValue);
           } else {
@@ -409,9 +452,12 @@
       const selectElements = item.querySelectorAll('select');
       if (selectElements.length > 0) {
         selectElements.forEach(select => {
-          const opts = select.querySelectorAll('option');
-          if (opts.length > 1) {
-            select.value = opts[Math.floor(Math.random() * (opts.length - 1)) + 1].value;
+          const options = Array.from(select.querySelectorAll('option')).filter((option, index) =>
+            index > 0 && option.value && option.textContent.trim()
+          );
+          if (options.length > 0) {
+            const selectedOption = pickContextualOption(options, questionText) || randomChoice(options);
+            select.value = selectedOption.value;
             select.dispatchEvent(new Event('change', { bubbles: true }));
           }
         });

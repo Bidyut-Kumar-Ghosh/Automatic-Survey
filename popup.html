@@ -455,11 +455,11 @@
   <style>
     :root {
       color-scheme: light;
-      --accent: #635bff;
-      --accent-dark: #4f46e5;
-      --ink: #172033;
-      --muted: #748097;
-      --line: #e6eaf2;
+      --accent: #0b9b84;
+      --accent-dark: #087968;
+      --ink: #172b27;
+      --muted: #72837d;
+      --line: #e3ebe7;
     }
 
     body {
@@ -468,21 +468,27 @@
       padding: 16px;
       overflow-x: hidden;
       overflow-y: auto;
-      background: radial-gradient(ellipse at 15% 0%, #263b78 0%, transparent 48%),
-        linear-gradient(145deg, #10182e, #182544 65%, #202c50);
+      font-family: "Aptos", "Segoe UI Variable", "Trebuchet MS", sans-serif;
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(35, 183, 153, 0.3), transparent 42%),
+        radial-gradient(ellipse at 100% 100%, rgba(181, 221, 100, 0.16), transparent 38%),
+        linear-gradient(145deg, #102720, #123b35 62%, #183a32);
     }
 
     body::before {
-      opacity: 0.45;
+      opacity: 0.2;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(91, 220, 182, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(212, 236, 149, 0.14) 0%, transparent 50%);
     }
 
     .container {
       gap: 16px;
       padding: 22px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 22px;
-      background: #fff;
-      box-shadow: 0 20px 50px rgba(4, 10, 28, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      border-radius: 24px;
+      background: linear-gradient(155deg, #fffefa 0%, #f8fbf8 100%);
+      box-shadow: 0 24px 58px rgba(3, 22, 17, 0.34), 0 2px 8px rgba(255, 255, 255, 0.12);
     }
 
     .header {
@@ -496,9 +502,9 @@
     .header-icon {
       width: 46px;
       height: 46px;
-      border-radius: 15px;
-      background: linear-gradient(145deg, #756bff, #4f46e5);
-      box-shadow: 0 8px 18px rgba(99, 91, 255, 0.25);
+      border-radius: 16px;
+      background: linear-gradient(145deg, #17b69a, #087968);
+      box-shadow: 0 9px 20px rgba(11, 155, 132, 0.24);
       font-size: 23px;
       animation: none;
     }
@@ -512,21 +518,22 @@
       color: var(--ink);
       background: none;
       -webkit-text-fill-color: currentColor;
-      font-size: 21px;
-      letter-spacing: -0.5px;
+      font-size: 22px;
+      letter-spacing: -0.7px;
     }
 
     .header-subtitle {
       color: var(--muted);
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.15px;
     }
 
     .version-badge {
       margin-left: 5px;
       padding: 3px 7px;
       vertical-align: 3px;
-      background: #f0efff;
+      background: #e7f5ef;
       color: var(--accent-dark);
       font-size: 9px;
       letter-spacing: 0.3px;
@@ -537,8 +544,13 @@
       height: 36px;
       margin-left: auto;
       border-radius: 12px;
-      background: #f5f6fb;
+      background: #eef4f0;
       font-size: 16px;
+    }
+
+    .updates-btn:hover {
+      background: #e1efe8;
+      transform: translateY(-1px);
     }
 
     .notification-dot {
@@ -551,9 +563,9 @@
     }
 
     label {
-      color: #4c5870;
+      color: #52665f;
       font-size: 10px;
-      letter-spacing: 0.65px;
+      letter-spacing: 0.75px;
     }
 
     input,
@@ -562,7 +574,7 @@
       padding: 11px 13px;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #f8f9fc;
+      background: #f6f9f7;
       color: var(--ink);
       font-size: 13px;
       transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -570,7 +582,7 @@
 
     input:hover,
     select:hover {
-      border-color: #b7b3ff;
+      border-color: #9dcfc0;
       background: #fff;
       box-shadow: none;
     }
@@ -578,8 +590,12 @@
     input:focus,
     select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(11, 155, 132, 0.14);
       transform: none;
+    }
+
+    input::placeholder {
+      color: #94a39c;
     }
 
     .button-group {
@@ -589,15 +605,15 @@
 
     #loadQuestions {
       min-height: 42px;
-      border: 1px solid #dfe3ef;
-      background: #f6f7fb;
-      color: #48536b;
+      border: 1px solid #dce8e2;
+      background: #f0f6f2;
+      color: #3e5a50;
       box-shadow: none;
     }
 
     #loadQuestions:hover:not(:disabled) {
-      background: #eeefff;
-      border-color: #c9c5ff;
+      background: #e6f3eb;
+      border-color: #b7daca;
     }
 
     #loadQuestions:disabled {
@@ -633,7 +649,7 @@
       flex: 0 0 auto;
       padding: 4px 8px;
       border-radius: 999px;
-      background: #f0efff;
+      background: #e7f5ef;
       color: var(--accent-dark);
       font-size: 10px;
       font-weight: 700;
@@ -661,8 +677,9 @@
       gap: 9px;
       padding: 12px;
       border: 1px solid var(--line);
-      border-radius: 13px;
-      background: #fbfcff;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(26, 63, 49, 0.035);
     }
 
     .question-card-header {
@@ -705,7 +722,7 @@
       grid-template-columns: minmax(0, 1fr) 70px;
       align-items: center;
       gap: 8px;
-      color: #4c5870;
+      color: #52665f;
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0;
@@ -737,7 +754,7 @@
     }
 
     .question-total.invalid {
-      color: #bd3833;
+      color: #b64139;
       font-weight: 700;
     }
 
@@ -754,13 +771,13 @@
     }
 
     #run {
-      background: linear-gradient(135deg, #6d63ff, #5147df);
-      box-shadow: 0 7px 16px rgba(99, 91, 255, 0.22);
+      background: linear-gradient(135deg, #12aa8f, #087968);
+      box-shadow: 0 7px 16px rgba(11, 155, 132, 0.23);
     }
 
     #run:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(99, 91, 255, 0.28);
+      box-shadow: 0 10px 20px rgba(11, 155, 132, 0.3);
     }
 
     #run:disabled {
@@ -769,14 +786,14 @@
     }
 
     #stop {
-      background: #fff1f0;
-      color: #c23e3a;
+      background: #fff1e9;
+      color: #b94b31;
       box-shadow: none;
     }
 
     #stop:hover {
       transform: translateY(-1px);
-      background: #ffe4e2;
+      background: #ffe7da;
     }
 
     #status {
@@ -786,8 +803,8 @@
       overflow: hidden;
       border: 1px solid #e6e8f0;
       border-radius: 12px;
-      background: #f7f8fc;
-      color: #4c5870;
+      background: #f3f7f4;
+      color: #496258;
       font-size: 12px;
       font-weight: 600;
     }
@@ -801,29 +818,29 @@
       background: linear-gradient(
         to right,
         var(--accent) 0,
-        #8b83ff var(--progress, 0%),
-        #e7e9f1 var(--progress, 0%),
-        #e7e9f1 100%
+        #80cf9e var(--progress, 0%),
+        #e2ebe5 var(--progress, 0%),
+        #e2ebe5 100%
       );
       content: '';
     }
 
     #status.processing {
-      border-color: #e4e0ff;
-      background: #f7f6ff;
-      color: #5147c8;
+      border-color: #cce8da;
+      background: #eff8f2;
+      color: #087968;
     }
 
     #status.success {
       border-color: #ccebd9;
       background: #f1fbf5;
-      color: #18834a;
+      color: #237b4d;
     }
 
     #status.error {
       border-color: #f4d0ce;
       background: #fff5f4;
-      color: #bd3833;
+      color: #b64139;
     }
 
     .footer {
@@ -848,6 +865,7 @@
     .updates-content {
       border: 1px solid var(--line);
       border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(4, 25, 18, 0.3);
     }
 
     .updates-header h2 {
@@ -863,8 +881,30 @@
     button:focus-visible,
     input:focus-visible,
     select:focus-visible {
-      outline: 3px solid rgba(99, 91, 255, 0.3);
+      outline: 3px solid rgba(11, 155, 132, 0.32);
       outline-offset: 2px;
+    }
+
+    #questionList {
+      scrollbar-color: #b8d7c8 transparent;
+      scrollbar-width: thin;
+    }
+
+    .question-card,
+    #loadQuestions,
+    #run,
+    #stop,
+    .updates-btn {
+      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .question-card:hover {
+      border-color: #c8ddd1;
+      box-shadow: 0 5px 14px rgba(26, 63, 49, 0.07);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -890,7 +930,7 @@
 
       <div class="header-center">
         <h3>FormFlow</h3>
-        <span class="version-badge">v2.7</span>
+        <span class="version-badge">v2.8</span>
         <div class="header-subtitle">Response workflow</div>
       </div>
 
@@ -975,7 +1015,25 @@
       <div class="version-item latest">
 
         <div class="version-title">
-          v2.7 - Latest Release
+          v2.8 - Latest Release
+        </div>
+
+        <div class="version-date">
+          November 2026
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Match recognized questions to relevant options, including age, education, frequency, and opinion scales</li>
+          <li>✅ Preserve configured Google Forms answer percentages and rating selections</li>
+          <li>✅ Keep random fallback behavior for questions that cannot be matched</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v2.7 - Per-Question Google Forms Setup
         </div>
 
         <div class="version-date">
