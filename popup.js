@@ -303,9 +303,19 @@ function initPopup() {
   const updatesBtn = document.querySelector('.updates-btn');
   const closeUpdatesBtn = document.getElementById('closeUpdatesBtn');
   const updatesModal = document.getElementById('updatesModal');
+  const ownerToggle = document.getElementById('ownerToggle');
+  const socialLinks = document.getElementById('socialLinks');
 
   if (!runBtn || !stopBtn) {
     return;
+  }
+
+  if (ownerToggle && socialLinks) {
+    ownerToggle.addEventListener('click', () => {
+      const expanded = ownerToggle.getAttribute('aria-expanded') === 'true';
+      ownerToggle.setAttribute('aria-expanded', String(!expanded));
+      socialLinks.hidden = expanded;
+    });
   }
 
   formIdInput.addEventListener('input', () => {
