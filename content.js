@@ -1,6 +1,7 @@
 (function () {
 
   let formType = sessionStorage.getItem('formType') || 'google';
+  const questionSettings = JSON.parse(sessionStorage.getItem('questionSettings') || '[]');
 
   function randomChoice(items) {
     if (!items || !items.length) return null;
@@ -12,6 +13,54 @@
     if (!choice) return false;
     choice.click();
     return true;
+  }
+
+  function clickSubmitButton() {
+    const buttons = Array.from(document.querySelectorAll('button[type="submit"], input[type="submit"], [role="button"]'));
+    const submitButton = buttons.find(button => {
+      if (!button.getClientRects().length || button.disabled || button.getAttribute('aria-disabled') === 'true') {
+        return false;
+      }
+
+      const label = String(
+        button.getAttribute('aria-label') ||
+        button.innerText ||
+        button.textContent ||
+        button.value ||
+        ''
+      ).replace(/\s+/g, ' ').trim().toLowerCase();
+      return /^(submit|submit form|submit response|send)$/.test(label);
+    });
+
+    if (!submitButton) {
+      console.error('Could not find a visible Submit button.');
+      return false;
+    }
+
+    submitButton.click();
+    return true;
+  }
+
+  function weightedChoice(options, weights) {
+    const entries = Array.from(options).map((option, index) => ({
+      option,
+      weight: Number(weights && weights[index])
+    })).filter(entry => entry.weight > 0);
+
+    if (!weights) {
+      return randomChoice(Array.from(options));
+    }
+    if (entries.length === 0) {
+      return null;
+    }
+
+    const totalWeight = entries.reduce((sum, entry) => sum + entry.weight, 0);
+    let remaining = Math.random() * totalWeight;
+    for (const entry of entries) {
+      remaining -= entry.weight;
+      if (remaining < 0) return entry.option;
+    }
+    return entries[entries.length - 1].option;
   }
 
   function randomTextValue() {
@@ -165,13 +214,17 @@
       
       console.log(`Found ${questionContainers.length} questions to fill`);
     
-    questionContainers.forEach((container, index) => {
+    questionContainers.forEach((container) => {
       const questionText = getQuestionText(container);
+      const settings = questionSettings[questionIndex];
 
       // 1. Radio buttons (Single choice)
       const radioOptions = container.querySelectorAll('[role="radio"]');
       if (radioOptions.length > 0) {
-        randomClick(radioOptions);
+        const selectedOption = settings && settings.kind === 'rating'
+          ? radioOptions[settings.selectedIndex]
+          : weightedChoice(radioOptions, settings && settings.kind === 'choice' ? settings.weights : null);
+        if (selectedOption) selectedOption.click();
         questionIndex++;
         return;
       }
@@ -180,12 +233,26 @@
       const checkboxOptions = container.querySelectorAll('[role="checkbox"]');
       if (checkboxOptions.length > 0) {
         // Select 1-3 random checkboxes for variety
-        const numToSelect = Math.ceil(Math.random() * Math.min(3, checkboxOptions.length));
-        const selected = new Set();
-        while (selected.size < numToSelect) {
-          selected.add(Math.floor(Math.random() * checkboxOptions.length));
+        const pool = Array.from(checkboxOptions).map((option, index) => ({
+          option,
+          weight: settings && settings.kind === 'checkbox'
+            ? Number(settings.weights[index])
+            : 1
+        })).filter(entry => entry.weight > 0);
+        const numToSelect = Math.ceil(Math.random() * Math.min(3, pool.length));
+        for (let i = 0; i < numToSelect; i++) {
+          const totalWeight = pool.reduce((sum, entry) => sum + entry.weight, 0);
+          let remaining = Math.random() * totalWeight;
+          let selectedIndex = pool.length - 1;
+          for (let j = 0; j < pool.length; j++) {
+            remaining -= pool[j].weight;
+            if (remaining < 0) {
+              selectedIndex = j;
+              break;
+            }
+          }
+          pool.splice(selectedIndex, 1)[0].option.click();
         }
-        selected.forEach(idx => checkboxOptions[idx].click());
         questionIndex++;
         return;
       }
@@ -196,9 +263,11 @@
         selectElements.forEach(select => {
           const options = select.querySelectorAll('option, [role="option"]');
           if (options.length > 0) {
-            const validOptions = Array.from(options).filter(o => o.value && o.textContent.trim());
-            const ageChoice = pickAgeOption(validOptions, questionText);
-            const educationChoice = pickEducationOption(validOptions, questionText);
+            const validOptions = Array.from(options).filter(o =>
+              (o.value || o.getAttribute('role') === 'option') && o.textContent.trim()
+            );
+            const ageChoice = settings && settings.kind === 'choice' ? null : pickAgeOption(validOptions, questionText);
+            const educationChoice = settings && settings.kind === 'choice' ? null : pickEducationOption(validOptions, questionText);
 
             if (ageChoice) {
               ageChoice.click();
@@ -209,7 +278,11 @@
               return;
             }
 
-            validOptions[Math.floor(Math.random() * validOptions.length)].click();
+            const selectedOption = weightedChoice(
+              validOptions,
+              settings && settings.kind === 'choice' ? settings.weights : null
+            );
+            if (selectedOption) selectedOption.click();
           }
         });
         questionIndex++;
@@ -265,17 +338,15 @@
 
       console.log(`Filled ${questionIndex} questions`);
 
-      // Increment submission counter
-      sessionStorage.setItem('submissionCount', (submissionCount + 1).toString());
-
       // Click submit button
       setTimeout(() => {
-        const btn = document.querySelector('div[role="button"][jsname]') || document.querySelector('button[type="submit"]');
-        if (btn) {
+        const clicked = clickSubmitButton();
+        sessionStorage.setItem('submitClickResult', clicked ? 'clicked' : 'button-not-found');
+        if (clicked) {
           console.log('Clicking submit button');
-          btn.click();
+          sessionStorage.setItem('submissionCount', (submissionCount + 1).toString());
         }
-      }, 1500);
+      }, 5000);
     })();
   } 
   // Handle Microsoft Forms
@@ -351,22 +422,15 @@
 
       console.log(`Filled ${questionIndex} questions`);
 
-      // Increment submission counter
-      sessionStorage.setItem('submissionCount', (submissionCount + 1).toString());
-
       // Click submit button for Microsoft Forms
       setTimeout(() => {
-        const submitBtn = document.querySelector('button[aria-label*="Submit"]') ||
-                          document.querySelector('button[type="submit"]') ||
-                          document.querySelector('[data-automation-id="submitButton"]') ||
-                          document.querySelector('button.ms-Button--primary') ||
-                          Array.from(document.querySelectorAll('button')).find(b => b.textContent.toLowerCase().includes('submit'));
-        
-        if (submitBtn) {
+        const clicked = clickSubmitButton();
+        sessionStorage.setItem('submitClickResult', clicked ? 'clicked' : 'button-not-found');
+        if (clicked) {
           console.log('Clicking submit button');
-          submitBtn.click();
+          sessionStorage.setItem('submissionCount', (submissionCount + 1).toString());
         }
-      }, 1500);
+      }, 5000);
     })();
   }
 

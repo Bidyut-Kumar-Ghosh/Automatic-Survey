@@ -8,6 +8,8 @@ FormFlow is a Chrome extension that automates the process of filling and submitt
 - Bulk response generation (user-defined count)
 - Single-tab execution (no tab clutter)
 - Adjustable speed (ultra / fast / safe / slow modes)
+- Google Forms question preview with per-question answer distributions
+- Individual rating-scale selection before starting a Google Forms run
 - Real-time progress tracking
 - Start / Stop control
 - Intelligent response distribution patterns
@@ -20,7 +22,7 @@ FormFlow is a Chrome extension that automates the process of filling and submitt
 - Load testing and stress testing forms
 
 ### ⚙️ How It Works
-The extension opens a form, detects question elements, selects answers based on distribution patterns, and submits responses automatically in a controlled loop. It supports both Google Forms and Microsoft Forms with intelligent platform detection.
+For Google Forms, load a question preview before starting. Set choice percentages for each choice question and select a value for each rating-scale question. Other supported question types retain automatic answers. Microsoft Forms continues to use automatic answer selection.
 
 ### 🔧 Supported Platforms
 - ✅ **Google Forms** - `https://docs.google.com/forms/...`
@@ -39,7 +41,25 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 📋 Version History
 
-### v2.5 - Latest Release (December 2024)
+### v2.7 - Latest Release (November 2026)
+**Per-Question Google Forms Setup**
+
+**Changes:**
+- ✅ Added a Google Forms question preview before starting a run
+- ✅ Added per-question answer percentage controls for choice questions
+- ✅ Added a required answer selector for each rating-scale question
+- ✅ Preserved automatic filling for other question types and Microsoft Forms
+
+### v2.6 (November 2026)
+**Popup UI Refresh**
+
+**Changes:**
+- ✅ Refreshed the popup layout, controls, and status styling
+- ✅ Added a visual progress indicator
+- ✅ Improved form labels and keyboard focus visibility
+- ✅ Respects reduced-motion preferences
+
+### v2.5 - December 2024
 **Major Update: Dual-Platform Support & Performance Improvements**
 
 **New Features:**
@@ -119,11 +139,10 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 🔄 Migration Guide
 
-**From v2.0 to v2.5:**
+**From v2.6 to v2.7:**
 - No breaking changes
-- Old functionality maintained
-- New Microsoft Forms support optional
-- Enhanced error recovery automatic
+- Google Forms now requires loading questions and choosing rating answers before starting
+- Microsoft Forms continues to use automatic answer selection
 
 ---
 
@@ -138,8 +157,11 @@ This tool is intended for educational and testing purposes only. Use responsibly
 **Issue: Only partial questions filling**
 - Solution: Increase delay setting to "Safe" or "Slow" for forms with many questions
 
-**Issue: "10 question(s) need to be completed" error**
-- Solution: This is now fixed in v2.5 - all questions will load before submission
+**Issue: Question preview does not show all questions**
+- Solution: Wait for the Google Form to load completely, then select "Load Google Form Questions" again
+
+**Issue: Chrome shows "Leave site? Changes you made may not be saved"**
+- The extension waits for a submission confirmation before navigating. If none appears, it stops and brings the form forward so you can check for missing answers.
 
 ---
 
@@ -148,5 +170,5 @@ This tool is intended for educational and testing purposes only. Use responsibly
 For issues, suggestions, or feature requests, please open an issue on the repository.
 
 **Developer:** Bidyut Kumar Ghosh  
-**Last Updated:** December 2024  
-**Current Version:** 2.5
+**Last Updated:** November 2026
+**Current Version:** 2.7

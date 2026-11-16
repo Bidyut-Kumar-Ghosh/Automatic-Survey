@@ -452,6 +452,432 @@
       }
     }
   </style>
+  <style>
+    :root {
+      color-scheme: light;
+      --accent: #635bff;
+      --accent-dark: #4f46e5;
+      --ink: #172033;
+      --muted: #748097;
+      --line: #e6eaf2;
+    }
+
+    body {
+      width: 380px;
+      min-height: auto;
+      padding: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: radial-gradient(ellipse at 15% 0%, #263b78 0%, transparent 48%),
+        linear-gradient(145deg, #10182e, #182544 65%, #202c50);
+    }
+
+    body::before {
+      opacity: 0.45;
+    }
+
+    .container {
+      gap: 16px;
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 20px 50px rgba(4, 10, 28, 0.32);
+    }
+
+    .header {
+      justify-content: flex-start;
+      gap: 12px;
+      padding-bottom: 16px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #756bff, #4f46e5);
+      box-shadow: 0 8px 18px rgba(99, 91, 255, 0.25);
+      font-size: 23px;
+      animation: none;
+    }
+
+    .header-center {
+      text-align: left;
+    }
+
+    h3 {
+      margin: 0 0 3px;
+      color: var(--ink);
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      font-size: 21px;
+      letter-spacing: -0.5px;
+    }
+
+    .header-subtitle {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .version-badge {
+      margin-left: 5px;
+      padding: 3px 7px;
+      vertical-align: 3px;
+      background: #f0efff;
+      color: var(--accent-dark);
+      font-size: 9px;
+      letter-spacing: 0.3px;
+    }
+
+    .updates-btn {
+      width: 36px;
+      height: 36px;
+      margin-left: auto;
+      border-radius: 12px;
+      background: #f5f6fb;
+      font-size: 16px;
+    }
+
+    .notification-dot {
+      top: 4px;
+      right: 4px;
+    }
+
+    .form-group {
+      gap: 7px;
+    }
+
+    label {
+      color: #4c5870;
+      font-size: 10px;
+      letter-spacing: 0.65px;
+    }
+
+    input,
+    select {
+      min-height: 46px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8f9fc;
+      color: var(--ink);
+      font-size: 13px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    input:hover,
+    select:hover {
+      border-color: #b7b3ff;
+      background: #fff;
+      box-shadow: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
+      transform: none;
+    }
+
+    .button-group {
+      gap: 9px;
+      margin-top: 0;
+    }
+
+    #loadQuestions {
+      min-height: 42px;
+      border: 1px solid #dfe3ef;
+      background: #f6f7fb;
+      color: #48536b;
+      box-shadow: none;
+    }
+
+    #loadQuestions:hover:not(:disabled) {
+      background: #eeefff;
+      border-color: #c9c5ff;
+    }
+
+    #loadQuestions:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .question-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .question-panel[hidden] {
+      display: none;
+    }
+
+    .question-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .question-panel-header h4 {
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    #questionCount {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f0efff;
+      color: var(--accent-dark);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .question-help,
+    #questionEmpty {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    #questionList {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      max-height: 330px;
+      overflow-y: auto;
+      padding: 2px 3px 2px 0;
+    }
+
+    .question-card {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcff;
+    }
+
+    .question-card-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .question-number {
+      color: var(--accent-dark);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .question-kind {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+    }
+
+    .question-title {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .question-answer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .question-answer-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 70px;
+      align-items: center;
+      gap: 8px;
+      color: #4c5870;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .question-answer-label {
+      overflow-wrap: anywhere;
+    }
+
+    .question-weight {
+      width: 52px;
+      flex: 0 0 52px;
+      min-height: 34px;
+      padding: 6px 8px;
+      border-radius: 9px;
+      text-align: right;
+    }
+
+    .question-rating-select {
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+
+    .question-total {
+      color: var(--muted);
+      font-size: 10px;
+      text-align: right;
+    }
+
+    .question-total.invalid {
+      color: #bd3833;
+      font-weight: 700;
+    }
+
+    button {
+      min-height: 46px;
+      border-radius: 12px;
+      font-size: 11px;
+      letter-spacing: 0.45px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    button::before {
+      display: none;
+    }
+
+    #run {
+      background: linear-gradient(135deg, #6d63ff, #5147df);
+      box-shadow: 0 7px 16px rgba(99, 91, 255, 0.22);
+    }
+
+    #run:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(99, 91, 255, 0.28);
+    }
+
+    #run:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    #stop {
+      background: #fff1f0;
+      color: #c23e3a;
+      box-shadow: none;
+    }
+
+    #stop:hover {
+      transform: translateY(-1px);
+      background: #ffe4e2;
+    }
+
+    #status {
+      position: relative;
+      margin-top: -3px;
+      padding: 12px 13px 18px;
+      overflow: hidden;
+      border: 1px solid #e6e8f0;
+      border-radius: 12px;
+      background: #f7f8fc;
+      color: #4c5870;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    #status::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(
+        to right,
+        var(--accent) 0,
+        #8b83ff var(--progress, 0%),
+        #e7e9f1 var(--progress, 0%),
+        #e7e9f1 100%
+      );
+      content: '';
+    }
+
+    #status.processing {
+      border-color: #e4e0ff;
+      background: #f7f6ff;
+      color: #5147c8;
+    }
+
+    #status.success {
+      border-color: #ccebd9;
+      background: #f1fbf5;
+      color: #18834a;
+    }
+
+    #status.error {
+      border-color: #f4d0ce;
+      background: #fff5f4;
+      color: #bd3833;
+    }
+
+    .footer {
+      margin-top: 0;
+      padding-top: 13px;
+      border: 0;
+      border-top: 1px solid var(--line);
+      background: none;
+      color: #8490a5;
+      -webkit-text-fill-color: currentColor;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+
+    .updates-modal {
+      background: rgba(13, 20, 39, 0.62);
+      backdrop-filter: blur(4px);
+    }
+
+    .updates-content {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .updates-header h2 {
+      background: none;
+      color: var(--ink);
+      -webkit-text-fill-color: currentColor;
+    }
+
+    .close-btn {
+      flex: 0 0 34px;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(99, 91, 255, 0.3);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -460,14 +886,15 @@
 
     <div class="header">
 
-      <div class="header-icon">🚀</div>
+      <div class="header-icon" aria-hidden="true">🚀</div>
 
       <div class="header-center">
         <h3>FormFlow</h3>
-        <span class="version-badge">v2.5</span>
+        <span class="version-badge">v2.7</span>
+        <div class="header-subtitle">Response workflow</div>
       </div>
 
-      <button class="updates-btn" title="View updates">
+      <button class="updates-btn" type="button" title="View updates" aria-label="View updates">
         📢
         <span class="notification-dot"></span>
       </button>
@@ -475,7 +902,7 @@
     </div>
 
     <div class="form-group">
-      <label>📋 Form Link / ID (Google or Microsoft)</label>
+      <label for="formId">📋 Form Link / ID (Google or Microsoft)</label>
 
       <input
         id="formId"
@@ -484,8 +911,20 @@
       />
     </div>
 
+    <button id="loadQuestions" type="button">Load Google Form Questions</button>
+
+    <section class="question-panel" id="questionPanel" aria-labelledby="questionPanelTitle" hidden>
+      <div class="question-panel-header">
+        <h4 id="questionPanelTitle">Question setup</h4>
+        <span id="questionCount">0 questions</span>
+      </div>
+      <p class="question-help">Set each rating answer and adjust choice percentages. Choice percentages must total 100% per question.</p>
+      <div id="questionList"></div>
+      <p id="questionEmpty" hidden>No supported questions were found in this form.</p>
+    </section>
+
     <div class="form-group">
-      <label>🔢 Responses Count</label>
+      <label for="count">🔢 Responses Count</label>
 
       <input
         id="count"
@@ -496,7 +935,7 @@
     </div>
 
     <div class="form-group">
-      <label>⚡ Speed</label>
+      <label for="mode">⚡ Speed</label>
 
       <select id="mode">
         <option value="ultra">⚡⚡ Ultra Fast (300ms)</option>
@@ -507,8 +946,8 @@
     </div>
 
     <div class="button-group">
-      <button id="run">▶ Start</button>
-      <button id="stop">⏹ Stop</button>
+      <button id="run" type="button">▶ Start</button>
+      <button id="stop" type="button">⏹ Stop</button>
     </div>
 
     <div id="status">🔄 Idle</div>
@@ -528,7 +967,7 @@
       <div class="updates-header">
         <h2>📝 Updates & Changelog</h2>
 
-        <button class="close-btn" id="closeUpdatesBtn">
+        <button class="close-btn" id="closeUpdatesBtn" type="button" aria-label="Close updates">
           ✕
         </button>
       </div>
@@ -536,21 +975,37 @@
       <div class="version-item latest">
 
         <div class="version-title">
-          v2.5 - Latest Release
+          v2.7 - Latest Release
         </div>
 
         <div class="version-date">
-          December 2024
+          November 2026
         </div>
 
         <ul class="version-changes">
-          <li>✅ Dual-platform support</li>
-          <li>✅ Fixed question loading</li>
-          <li>✅ Added support for all question types</li>
-          <li>✅ Improved tab management</li>
-          <li>✅ Modern glassmorphism UI</li>
-          <li>✅ Better lazy-load handling</li>
-          <li>✅ Enhanced performance and stability</li>
+          <li>✅ Preview and configure every detected Google Forms question</li>
+          <li>✅ Set answer percentages for choice questions</li>
+          <li>✅ Choose a rating for each rating-scale question</li>
+          <li>✅ Confirm submission before continuing to another response</li>
+          <li>✅ Keep progress feedback and keyboard-accessible controls</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v2.6 - Popup UI Refresh
+        </div>
+
+        <div class="version-date">
+          November 2026
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Refreshed popup layout and status styling</li>
+          <li>✅ Added a visual progress indicator</li>
+          <li>✅ Improved keyboard focus and reduced-motion support</li>
         </ul>
 
       </div>
