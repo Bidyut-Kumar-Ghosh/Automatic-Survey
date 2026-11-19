@@ -42,11 +42,37 @@ This tool is intended for educational and testing purposes only. Use responsibly
 
 ## 📋 Version History
 
-### v3.1 - Latest Release (November 2026)
+### v3.2 - Advanced Popup Experience (November 19, 2026)
+**Advanced popup workflow**
+
+**Changes:**
+- ✅ Added live Google and Microsoft Forms platform detection
+- ✅ Added response count controls and estimated run time
+- ✅ Added loading and status feedback for workflow actions
+- ✅ Added a safer 1–500 response limit
+- ✅ Refined popup spacing, hierarchy, and sticky owner footer
+
+### v3.1 (November 2026)
 **Extension cleanup**
 
 **Changes:**
 - ✅ Removed the optional local analytics feature and its host setup
+
+### v3.0 - Workflow Platform Cleanup (November 2026)
+**Native-host cleanup**
+
+**Changes:**
+- ✅ Removed optional native-host integration files and dependencies
+- ✅ Simplified the extension to browser APIs and in-page automation
+- ✅ Preserved Google Forms, Microsoft Forms, question setup, and submission workflows
+
+### v2.9 - Popup Structure and Ownership Refresh (November 2026)
+**Popup structure refresh**
+
+**Changes:**
+- ✅ Improved popup structure and readability
+- ✅ Added the owner profile section and asset presentation
+- ✅ Refined popup behavior and visual consistency
 
 ### v2.8 - Context-Aware Question Selection (November 2026)
 **Context-Aware Question Selection**
@@ -186,5 +212,5 @@ This tool is intended for educational and testing purposes only. Use responsibly
 For issues, suggestions, or feature requests, please open an issue on the repository.
 
 **Developer:** Bidyut Kumar Ghosh  
-**Last Updated:** November 2026
-**Current Version:** 3.1
+**Last Updated:** November 19, 2026
+**Current Version:** 3.2

@@ -300,6 +300,15 @@ function initPopup() {
   const stopBtn = document.getElementById("stop");
   const loadQuestionsBtn = document.getElementById('loadQuestions');
   const formIdInput = document.getElementById('formId');
+  const formPlatform = document.getElementById('formPlatform');
+  const formPlatformText = document.getElementById('formPlatformText');
+  const formValidIcon = document.getElementById('formValidIcon');
+  const countInput = document.getElementById('count');
+  const countDown = document.getElementById('countDown');
+  const countUp = document.getElementById('countUp');
+  const modeSelect = document.getElementById('mode');
+  const responseSummary = document.getElementById('responseSummary');
+  const timeEstimate = document.getElementById('timeEstimate');
   const updatesBtn = document.querySelector('.updates-btn');
   const closeUpdatesBtn = document.getElementById('closeUpdatesBtn');
   const updatesModal = document.getElementById('updatesModal');
@@ -318,10 +327,67 @@ function initPopup() {
     });
   }
 
+  const updateRunSummary = () => {
+    const count = Math.max(1, Math.min(500, parseInt(countInput.value, 10) || 1));
+    const delayByMode = { ultra: 300, fast: 800, safe: 2000, slow: 4000 };
+    const delay = delayByMode[modeSelect.value] || 2000;
+    const estimatedSeconds = count * (10 + delay / 1000);
+    const minutes = Math.max(1, Math.ceil(estimatedSeconds / 60));
+
+    countInput.value = String(count);
+    responseSummary.textContent = `${count} response${count === 1 ? '' : 's'} ready`;
+    timeEstimate.textContent = estimatedSeconds < 60
+      ? `~ ${Math.ceil(estimatedSeconds)} sec`
+      : `~ ${minutes} min`;
+  };
+
+  countDown?.addEventListener('click', () => {
+    countInput.value = String(Math.max(1, (parseInt(countInput.value, 10) || 1) - 1));
+    updateRunSummary();
+  });
+
+  countUp?.addEventListener('click', () => {
+    countInput.value = String(Math.min(500, (parseInt(countInput.value, 10) || 1) + 1));
+    updateRunSummary();
+  });
+
+  countInput?.addEventListener('change', updateRunSummary);
+  modeSelect?.addEventListener('change', updateRunSummary);
+  updateRunSummary();
+
   formIdInput.addEventListener('input', () => {
     loadedQuestions = [];
     loadedFormUrl = null;
     document.getElementById('questionPanel').hidden = true;
+
+    const formMatch = getFormMatch(formIdInput.value);
+    formPlatform.classList.remove('google', 'microsoft');
+    formValidIcon.classList.remove('visible');
+    if (formMatch?.formType === 'google') {
+      formPlatform.classList.add('google');
+      formPlatformText.textContent = 'Google Forms';
+      formValidIcon.classList.add('visible');
+    } else if (formMatch?.formType === 'microsoft') {
+      formPlatform.classList.add('microsoft');
+      formPlatformText.textContent = 'Microsoft Forms';
+      formValidIcon.classList.add('visible');
+      loadQuestionsBtn.textContent = 'Microsoft Forms: preview not needed';
+      loadQuestionsBtn.disabled = true;
+      loadQuestionsBtn.title = 'Question preview is currently available for Google Forms only';
+    } else {
+      formPlatformText.textContent = formIdInput.value.trim() ? 'Invalid link' : 'Auto detect';
+      if (!loadedQuestions.length) {
+        loadQuestionsBtn.disabled = false;
+        loadQuestionsBtn.textContent = 'Load Google Form Questions';
+        loadQuestionsBtn.title = '';
+      }
+    }
+
+    if (formMatch?.formType === 'google') {
+      loadQuestionsBtn.disabled = false;
+      loadQuestionsBtn.textContent = 'Load Google Form Questions';
+      loadQuestionsBtn.title = '';
+    }
   });
 
   loadQuestionsBtn.addEventListener('click', async () => {
@@ -343,6 +409,8 @@ function initPopup() {
     }
 
     loadQuestionsBtn.disabled = true;
+    loadQuestionsBtn.classList.add('loading');
+    loadQuestionsBtn.textContent = 'Loading questions';
     loadedQuestions = [];
     loadedFormUrl = null;
     document.getElementById('questionPanel').hidden = true;
@@ -373,6 +441,8 @@ function initPopup() {
           console.error('Failed to close preview tab:', error);
         }
       }
+      loadQuestionsBtn.classList.remove('loading');
+      loadQuestionsBtn.textContent = 'Load Google Form Questions';
       loadQuestionsBtn.disabled = false;
     }
   });
@@ -388,7 +458,13 @@ function initPopup() {
     runBtn.disabled = true;
 
     let input = formIdInput.value;
-    let count = parseInt(document.getElementById("count").value);
+    let count = parseInt(document.getElementById("count").value, 10);
+    if (!Number.isInteger(count) || count < 1) {
+      count = 1;
+    } else {
+      count = Math.min(500, count);
+    }
+    document.getElementById("count").value = String(count);
     let mode = document.getElementById("mode").value;
     let status = document.getElementById("status");
     let submissionError = null;

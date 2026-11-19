@@ -1066,6 +1066,269 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    .container {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .header {
+      align-items: flex-start;
+    }
+
+    .header-icon {
+      position: relative;
+    }
+
+    .header-icon::after {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 9px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #79ca93;
+      content: '';
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .updates-btn {
+      margin-left: 0;
+    }
+
+    .form-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .form-platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+      padding: 4px 8px;
+      border: 1px solid #dce8e2;
+      border-radius: 999px;
+      background: #f6faf7;
+      color: #72837d;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .form-platform-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #aab8b1;
+    }
+
+    .form-platform.google {
+      border-color: #cde4d7;
+      background: #edf8f2;
+      color: #087968;
+    }
+
+    .form-platform.google .form-platform-dot {
+      background: #12aa8f;
+      box-shadow: 0 0 0 3px rgba(18, 170, 143, 0.1);
+    }
+
+    .form-platform.microsoft {
+      border-color: #cfd7ec;
+      background: #f2f4fb;
+      color: #4d6190;
+    }
+
+    .form-platform.microsoft .form-platform-dot {
+      background: #647fc5;
+      box-shadow: 0 0 0 3px rgba(100, 127, 197, 0.1);
+    }
+
+    .form-id-wrap {
+      position: relative;
+    }
+
+    .form-id-wrap input {
+      padding-right: 44px;
+    }
+
+    .form-valid-icon {
+      position: absolute;
+      right: 14px;
+      bottom: 13px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e4f5ec;
+      color: #087968;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .form-valid-icon.visible {
+      display: flex;
+    }
+
+    #loadQuestions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #loadQuestions::before {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      content: '';
+      opacity: 0;
+    }
+
+    #loadQuestions.loading::before {
+      opacity: 1;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .run-settings {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .count-control {
+      display: grid;
+      grid-template-columns: 34px minmax(40px, 1fr) 34px;
+      min-height: 46px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f6f9f7;
+    }
+
+    .count-control button {
+      width: 34px;
+      min-height: 44px;
+      border-radius: 0;
+      background: transparent;
+      color: #52665f;
+      box-shadow: none;
+      font-size: 16px;
+    }
+
+    .count-control button:hover {
+      background: #eaf4ef;
+      transform: none;
+    }
+
+    .count-control input {
+      min-height: 44px;
+      padding: 8px 2px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      text-align: center;
+      appearance: textfield;
+    }
+
+    .count-control input::-webkit-inner-spin-button,
+    .count-control input::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    .run-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 34px;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .run-summary strong {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 46px;
+    }
+
+    #stop {
+      width: 46px;
+      min-width: 46px;
+      padding: 0;
+    }
+
+    #status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #status::before {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 7px;
+      border-radius: 50%;
+      background: #9fb0a8;
+      content: '';
+    }
+
+    #status.processing::before {
+      background: #087968;
+      box-shadow: 0 0 0 4px rgba(8, 121, 104, 0.08);
+      animation: statusPulse 1.4s ease-in-out infinite;
+    }
+
+    #status.success::before {
+      background: #4b9a68;
+    }
+
+    #status.error::before {
+      background: #c95b50;
+    }
+
+    @keyframes statusPulse {
+      50% { box-shadow: 0 0 0 7px rgba(8, 121, 104, 0.02); }
+    }
+
+    .footer {
+      position: sticky;
+      bottom: -22px;
+      z-index: 2;
+      margin: 0 -22px -22px;
+      padding: 14px 22px 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(248, 251, 248, 0.96);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
 
@@ -1079,25 +1342,38 @@
 
       <div class="header-center">
         <h3>FormFlow</h3>
-        <span class="version-badge">v3.1</span>
+        <span class="version-badge">v3.2</span>
         <div class="header-subtitle">Response workflow</div>
       </div>
 
-      <button class="updates-btn" type="button" title="View updates" aria-label="View updates">
-        📢
-        <span class="notification-dot"></span>
-      </button>
+      <div class="header-actions">
+        <button class="updates-btn" type="button" title="View updates" aria-label="View updates">
+          📢
+          <span class="notification-dot"></span>
+        </button>
+      </div>
 
     </div>
 
     <div class="form-group">
-      <label for="formId">📋 Form Link / ID (Google or Microsoft)</label>
+      <div class="form-toolbar">
+        <label for="formId">📋 Form Link / ID</label>
+        <span class="form-platform" id="formPlatform" aria-live="polite">
+          <span class="form-platform-dot"></span>
+          <span id="formPlatformText">Auto detect</span>
+        </span>
+      </div>
 
-      <input
-        id="formId"
-        type="text"
-        placeholder="Paste Google Forms or Microsoft Forms link"
-      />
+      <div class="form-id-wrap">
+        <input
+          id="formId"
+          type="text"
+          placeholder="Paste Google Forms or Microsoft Forms link"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <span class="form-valid-icon" id="formValidIcon" aria-hidden="true">✓</span>
+      </div>
     </div>
 
     <button id="loadQuestions" type="button">Load Google Form Questions</button>
@@ -1112,31 +1388,35 @@
       <p id="questionEmpty" hidden>No supported questions were found in this form.</p>
     </section>
 
-    <div class="form-group">
-      <label for="count">🔢 Responses Count</label>
+    <div class="run-settings">
+      <div class="form-group">
+        <label for="count">🔢 Responses</label>
+        <div class="count-control">
+          <button id="countDown" type="button" aria-label="Decrease response count">−</button>
+          <input id="count" type="number" value="10" min="1" max="500" />
+          <button id="countUp" type="button" aria-label="Increase response count">+</button>
+        </div>
+      </div>
 
-      <input
-        id="count"
-        type="number"
-        value="10"
-        min="1"
-      />
+      <div class="form-group">
+        <label for="mode">⚡ Execution speed</label>
+        <select id="mode">
+          <option value="ultra">Ultra Fast · 300 ms</option>
+          <option value="fast">Fast · 800 ms</option>
+          <option value="safe" selected>Safe · 2 sec</option>
+          <option value="slow">Slow · 4 sec</option>
+        </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="mode">⚡ Speed</label>
-
-      <select id="mode">
-        <option value="ultra">⚡⚡ Ultra Fast (300ms)</option>
-        <option value="fast">⚡ Fast (800ms)</option>
-        <option value="safe" selected>🐢 Safe (2000ms)</option>
-        <option value="slow">🐌 Slow (4000ms)</option>
-      </select>
+    <div class="run-summary" aria-live="polite">
+      <span id="responseSummary">10 responses ready</span>
+      <strong id="timeEstimate">~ 25 min</strong>
     </div>
 
     <div class="button-group">
       <button id="run" type="button">▶ Start</button>
-      <button id="stop" type="button">⏹ Stop</button>
+      <button id="stop" type="button" aria-label="Stop workflow" title="Stop workflow">■</button>
     </div>
 
     <div id="status">🔄 Idle</div>
@@ -1215,7 +1495,26 @@
       <div class="version-item latest">
 
         <div class="version-title">
-          v3.1 - Latest Release
+          v3.2 - Advanced Popup Experience
+        </div>
+
+        <div class="version-date">
+          November 19, 2026
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Added live Google and Microsoft Forms platform detection</li>
+          <li>✅ Added response count controls and estimated run time</li>
+          <li>✅ Improved loading, status, and platform feedback</li>
+          <li>✅ Limited bulk runs to a safer 1–500 response range</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v3.1
         </div>
 
         <div class="version-date">
@@ -1224,6 +1523,42 @@
 
         <ul class="version-changes">
           <li>✅ Removed the optional local analytics module and its native host setup</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v3.0 - Workflow Platform Cleanup
+        </div>
+
+        <div class="version-date">
+          November 2026
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Removed optional native-host integration and dependencies</li>
+          <li>✅ Simplified the extension around browser APIs and DOM automation</li>
+          <li>✅ Preserved existing form automation workflows</li>
+        </ul>
+
+      </div>
+
+      <div class="version-item">
+
+        <div class="version-title">
+          v2.9 - Popup Structure and Ownership Refresh
+        </div>
+
+        <div class="version-date">
+          November 2026
+        </div>
+
+        <ul class="version-changes">
+          <li>✅ Improved popup structure and code readability</li>
+          <li>✅ Added the owner profile section and profile asset</li>
+          <li>✅ Refined popup behavior and visual consistency</li>
         </ul>
 
       </div>
